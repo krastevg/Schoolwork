@@ -1,9 +1,9 @@
 
 public class Company {
 
-	private String nameOfCompany;
-	private String dateOfEstablishment;
-	private String bulstat;
+	protected String nameOfCompany;
+	protected String dateOfEstablishment;
+	protected String bulstat;
 
 	public Company() {
 
