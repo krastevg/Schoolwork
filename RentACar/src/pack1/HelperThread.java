@@ -85,24 +85,29 @@ public class HelperThread extends Thread {
 				String[] datesServer = Server.cars.get(i).getDate().split("/");
 
 				for (int j = 0; j < datesClient.length; j++) {
-					for (int h = 0; h < datesServer.length; h++) {
+					
+					
+					for (int h = 0; h < datesServer.length; h++) 
+					{
+
 						if (datesClient[j].equals(datesServer[h])) {
 							out.println("Car is taken for this date " + datesClient[j]);
 							out.flush();
 							break;
 
-						} else if ((h == datesServer.length - 1) && (j == datesClient.length - 1)) {
-							Server.cars.get(i).setDate(date1 + Server.cars.get(i).getDate());
-							out.println("Car reserved for the period " + date1);
-							out.flush();
 						}
-
 					}
+
 				}
+
+				Server.cars.get(i).setDate(date1 + Server.cars.get(i).getDate());
+				out.println("Car reserved for the period " + date1);
+				out.flush();
 			}
 		}
-
 	}
+
+	
 
 	public void CarReturn() {
 		out.println("Enter id of the car you want to return!");
