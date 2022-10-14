@@ -1,0 +1,207 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+class Account{
+	private:
+		string name;                     // shte ima get balance get/set rate get/set name nqma da ima 
+		double balance;                 //set balance v konstruktora na naslednicite se vika
+		double intrestRate;
+		//double intrest;
+	public:
+		Account();
+		string getName();
+		double getBalance();
+		double getIntrestRate();
+		void setName(string name);
+		void setIntrestRate(double rate);
+		void setBalance(double);
+	    void withdrawOrDeposit();
+		double calcIntrest();
+		
+	 	                    
+};
+
+Account::Account(){
+	 cout << "*******************************************" << endl;
+	cout << "Enter Name: ";
+	cin >> name;
+	cout << "Enter Intrest:  ";
+	cin >> intrestRate;
+	}
+	
+double Account::calcIntrest(){
+	int months;
+	double intrest;
+	cout << "*******************************************" << endl;
+	cout << "Account of Mr/Mrs " + getName() + " Balance is: " << getBalance() << endl;
+	cout << "Intrest Rate: " << getIntrestRate() <<endl;
+	cout << "Enter number of months: ";
+	cin >> months;
+	cout << "Intrest for " << months << " is " << months*(getBalance()*(getIntrestRate()/100))  << endl;
+	cout << "*******************************************" << endl;
+	return intrest;
+}
+
+void Account::setBalance(double b){
+	balance = b;
+}	
+	
+double Account::getBalance(){
+	return balance;
+}	
+
+string Account::getName(){
+	return name;
+}
+
+double Account::getIntrestRate(){
+	return intrestRate;
+}
+
+void Account::setName(string n){
+	name = n;
+}
+
+void Account::setIntrestRate(double r){
+	intrestRate = r;
+}
+
+void Account::withdrawOrDeposit(){
+	cout << "This is the base class function";
+}
+	
+
+
+class DepositAccount:public Account{
+	public:
+		DepositAccount();
+		void withdrawOrDeposit();
+		
+		
+};
+
+DepositAccount::DepositAccount(){
+	double money;
+	cout << "This is a deposit account enter the amount of money you wish to deposit: ";
+	cin >> money;
+	setBalance(money);
+	 cout << "*******************************************" << endl;
+}
+
+void DepositAccount::withdrawOrDeposit(){
+	
+	cout << "You can`t withdraw or deposit from this type of Account!"<<endl; 
+     cout << "*******************************************" << endl;
+}
+
+
+
+
+class CreditAccount:public Account{
+	public:
+		
+		CreditAccount();
+		void withdrawOrDeposit();
+		
+};
+
+CreditAccount::CreditAccount(){
+	double money;
+	cout << "Creating credit account ... enter Balance: ";
+	cin >> money;
+	setBalance(money);
+     cout << "*******************************************" << endl;
+}
+
+ void CreditAccount::withdrawOrDeposit(){
+	double sum ;
+
+	char action;
+    
+	cout << "*******************************************" << endl;
+	
+	while(true){
+		cout << "Do you wish to withdraw or deposit ? w | d " << endl;
+		cin >> action;
+		if(action == 'w' || action == 'd'){
+			break;
+		}
+	}
+	
+	switch(action){
+		case 'w':{
+			
+			while(true){
+				cout << "Enter sum you wish to withdraw : ";
+				cin >> sum ;
+				if(sum<=getBalance()){
+					cout << "Withdrawing....." << endl;
+					setBalance(getBalance()-sum);
+					break;
+				}
+			}
+			 
+			 cout << "Your balance is :  " << getBalance();
+			 cout << "*******************************************" << endl;
+			break;
+		}
+		
+		case 'd':{
+			
+			while(true){
+				cout << "Enter sum you wish to deposit : ";
+				cin >> sum ;
+				if(sum>0){
+					cout << "Depositing....." << endl;
+					setBalance(getBalance()+sum);
+					break;
+				}
+			}
+			 
+			 cout << "Your balance is :  " << getBalance() << "\n ";
+			 cout << "*******************************************" << endl;
+			break;
+			
+		}
+		
+		default: break;
+	}
+}
+
+void maxIntrestRate(Account acc[],int sizeA){
+	double max=0;
+	double intrest;
+	string name;
+	for(int i=0;i<sizeA;i++){
+	intrest = acc[i].getIntrestRate();
+		if(intrest>=max){
+			max = intrest;
+			name = acc[i].getName();
+		}
+	}
+	 cout << "*******************************************" << endl;
+	 cout << "Highest intrest rate :" << max << "Account of: " << name << endl;
+	 cout << "*******************************************" << endl;
+}   
+
+int main(){
+	
+	DepositAccount* da = new DepositAccount[2];
+	CreditAccount* ca = new CreditAccount[2];
+     da[1].withdrawOrDeposit();    // declariranite funkcii vuv dushternite klasove overridevat tazi na maichiniq
+     ca[1].withdrawOrDeposit();
+     da[0].calcIntrest(); // testvane na funkciite
+     ca[0].calcIntrest();
+	maxIntrestRate(da,2);         // vikame edna i sushta funkciq i i podavame masiv ot 2 razlichni klasa poneje sa naslednici na Account
+	maxIntrestRate(ca,2);
+	
+	
+	
+	
+	delete [] da; // imame zadelqne na pamet za tova triem;
+	delete [] ca;
+	return 0;
+}
+	
