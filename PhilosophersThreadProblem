@@ -1,0 +1,103 @@
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <chrono>
+#include <string>
+using namespace std;
+ 
+ 
+bool forks[5] = {true,true,true,true,true}; // incializirame vsichki vilici kato TRUE toest moje da budat vzeti
+mutex forkMutex; // zakluchva masiva ot vilici za da sme sigurni che nikoi ne buta  dokato nqkoi pravi promeni ili proverqva za svobodni vilici
+mutex screenTime; // zakluchvame ekrana cherz tova za da sme sigurni che vsichko shte se izleze napisano na edin red  
+//komentirai go i vij kakvo stava :D
+ 
+void philLife(int id, int secondsThink, int secondsEat ){ // nomer na filosof | za kolko misli | za kolko shte qde
+	bool isHungry = false;
+	bool isThinking = true;
+ 
+	while(true){
+ 
+		if(isThinking && !isHungry){ // ako filosofa misli i ne e gladen
+			screenTime.lock();  // zakluchvame ekrana !!! 
+			cout << "Phil " << id << " is thinking for " << secondsThink << endl;
+			screenTime.unlock(); // otjluchvame ekrana
+			this_thread::sleep_for(chrono::seconds(secondsThink)); // misli za zadadeni secundi sled tova toi ogladnqva i spira da misli
+			screenTime.lock();
+			cout << "Phil " << id << " has gotten hungry " << endl;
+			screenTime.unlock();
+ 
+			isHungry = true; // ogladnqva i spira da misli
+			isThinking = false;
+ 
+			}else if(isHungry){ // filosofa e gladen iska da si vzeme viica i da qde 
+				forkMutex.lock(); // zakluchen masiv ot vilici dokato proverqvame !
+				screenTime.lock();
+				cout << id <<" FORKS WANTED " << id << (id+1)%5 << endl; // tuk pokazvame koi filosof koq vilica iska da vzeme
+				screenTime.unlock();   
+				if(forks[id] && forks[(id+1)% 5]){ // vlizame tuka ako vilicite ni sa svobodni
+ 
+					screenTime.lock();
+					cout << "Forks " << id <<" and " << (id+1) % 5 << " are free " << id <<" starts eating" << endl;
+					screenTime.unlock();
+ 
+ 
+					forks[id] = false;   //vzima vilicite ot dvete si strani % 5 pravi taka che filosof 5 da vzima vilica 5 i  0 !!!
+					forks [(id+1) % 5] = false;
+					forkMutex.unlock();
+ 
+ 
+					this_thread::sleep_for(chrono::seconds(secondsEat)); // filosofa qde za X secundi
+					screenTime.lock();
+					cout << "Phil " << id << " FINISHED EATING " << endl;
+					screenTime.unlock();
+ 
+					forkMutex.lock(); // pak zaklucvame za da ostavim vilicite
+					forks[id] = true;   //ostavq vilicite sled kato svurshi da qde
+					forks [(id+1)% 5] = true;
+					forkMutex.unlock();
+ 
+					isHungry = false ; // stava gladen
+					isThinking = true; // pochva da misli  cherz tezi dvete flizame vuv purvoto uslovie ot novo
+ 
+ 
+				} else { // nqmame svobodni vilici  filisofa misli oshte 1 sekunda i otnovo iska vilica 
+				//toest vliza pak v gorniq block kod
+					screenTime.lock();
+					cout << "Forks are not free Phil " << id << " thinks some more " << endl;
+					screenTime.unlock();
+					this_thread::sleep_for(chrono::seconds(1));
+				}
+ 
+					forkMutex.unlock(); // za da izbegnem deadlock ako ne vleze vuv nito edno 
+				// da se podsigurim che drugite nishko shte moje da polzvat fork masiva	
+ 
+		}
+ 
+ 
+	}
+}
+ 
+ 
+int main(){
+	//cout << (4+1)%5; proverka na vzimaneto na vilici
+ thread *t1,*t2,*t3,*t4,*t5; // deklaraciq i incializaciq na nishki
+ 
+ t1 = new thread(philLife,0,10,3);
+ t2 = new thread(philLife,1,10,3);
+ t3 = new thread(philLife,2,10,3);
+ t4 = new thread(philLife,3,10,3);
+ t5 = new thread(philLife,4,10,3);
+ 
+t1->join();
+t2->join();
+t3->join();
+t4->join();
+t5->join();
+
+delete t1;
+delete t2;
+delete t3;
+delete t4;
+delete t5;
+ 
+}
